@@ -2,13 +2,14 @@ package dijkstra_algorithm;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Map;
 
 public class MainApp extends JFrame {
     private Graph graph;
+    private ShortestPathService shortestPathService;
     private JTextField startNodeField;
     private JTextField endNodeField;
     private JTextArea outputArea;
+    private GraphPanel graphPanel;
 
     public MainApp() {
         setTitle("Dijkstra's Algorithm");
@@ -42,39 +43,42 @@ public class MainApp extends JFrame {
         buttonPanel.add(calculateButton);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
+        initializeGraph();
+
+        shortestPathService = new ShortestPathService(graph);
+
+        graphPanel = new GraphPanel(graph);
+        graphPanel.setPreferredSize(new Dimension(600, 400));
+        getContentPane().add(graphPanel, BorderLayout.EAST);
+
+        setVisible(true);
+    }
+
+    private void initializeGraph() {
         graph = new Graph();
         graph.addNode("A");
         graph.addNode("B");
         graph.addNode("C");
         graph.addNode("D");
-        graph.addEdge("A", "B", 5.0);
-        graph.addEdge("A", "C", 1.0);
-        graph.addEdge("B", "D", 1.0);
-        graph.addEdge("C", "B", 2.0);
-        graph.addEdge("C", "D", 4.0);
-        graph.addEdge("D", "B", 3.0);
-
-        setVisible(true);
+        graph.addNode("E");
+        graph.addNode("F");
+        graph.addEdge("A", "B", 3.0);
+        graph.addEdge("A", "C", 5.0);
+        graph.addEdge("B", "D", 2.0);
+        graph.addEdge("C", "D", 1.0);
+        graph.addEdge("C", "E", 6.0);
+        graph.addEdge("D", "F", 4.0);
+        graph.addEdge("E", "F", 2.0);
     }
 
     private void calculateShortestPath() {
         String startNodeId = startNodeField.getText();
         String endNodeId = endNodeField.getText();
 
-        GraphNode startNode = graph.getNode(startNodeId);
-        GraphNode endNode = graph.getNode(endNodeId);
+        ShortestPathResult result = shortestPathService.calculateShortestPath(startNodeId, endNodeId);
+        outputArea.setText(result.getMessage());
 
-        if (startNode == null || endNode == null) {
-            outputArea.setText("Invalid start or end node.");
-            return;
-        }
-
-        Map<GraphNode, Double> distances = DijkstraAlgorithm.findShortestPath(graph, startNode, endNode);
-        if (distances == null) {
-            outputArea.setText("No path found from " + startNodeId + " to " + endNodeId);
-        } else {
-            outputArea.setText(DijkstraAlgorithm.printShortestPath(graph, startNode, endNode));
-        }
+        graphPanel.highlightPath(result.getPathEdges(), graph.getNode(startNodeId), graph.getNode(endNodeId));
     }
 
     public static void main(String[] args) {
