@@ -21,7 +21,7 @@ public class Graph {
         }
     }
 
-    public void addEdge(String fromNodeId, String toNodeId, double weight) {
+    public void addEdge(String fromNodeId, String toNodeId, double weight, double cost) {
         GraphNode fromNode = nodes.get(fromNodeId);
         GraphNode toNode = nodes.get(toNodeId);
 
@@ -34,7 +34,7 @@ public class Graph {
             toNode = nodes.get(toNodeId);
         }
 
-        GraphEdge edge = new GraphEdge(fromNode, toNode, weight);
+        GraphEdge edge = new GraphEdge(fromNode, toNode, weight, cost);
         edges.add(edge);
         fromNode.addEdge(edge);
         toNode.addEdge(edge);
