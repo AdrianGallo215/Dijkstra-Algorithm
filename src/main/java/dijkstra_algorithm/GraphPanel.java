@@ -23,7 +23,7 @@ public class GraphPanel extends JPanel {
     private void generateNodePositions() {
         int width = 600;
         int height = 400;
-        int radius = Math.min(width, height) / 3;
+        int radius = 2*Math.min(width, height) / 5;
         int centerX = width / 2;
         int centerY = height / 2;
         int nodeCount = graph.getNodes().size();
@@ -88,7 +88,7 @@ public class GraphPanel extends JPanel {
             }
             g2d.setColor(nodeColor);
 
-            int size = 30;
+            int size = 50;
             int x = pos.x - size / 2;
             int y = pos.y - size / 2;
             g2d.fill(new Ellipse2D.Double(x, y, size, size));
