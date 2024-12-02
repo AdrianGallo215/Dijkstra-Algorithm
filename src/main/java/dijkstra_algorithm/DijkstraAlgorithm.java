@@ -1,6 +1,7 @@
 package dijkstra_algorithm;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
@@ -39,27 +40,43 @@ public class DijkstraAlgorithm {
     }
 
     public static String printShortestPath(Graph graph, GraphNode startNode, GraphNode endNode) {
-        Map<GraphNode, Double> distances = findShortestPath(graph, startNode, endNode);
-        if (distances == null) {
-            return ("No camino encontrado de  " + startNode + " a " + endNode);
-        }
+    Map<GraphNode, Double> distances = findShortestPath(graph, startNode, endNode);
+    if (distances == null) {
+        return "No se encontró un camino de " + startNode + " a " + endNode;
+    }
 
-        System.out.println("Camino más corto de  " + startNode + " a " + endNode + ":");
-        Double totalDistance = 0.0;
-        GraphNode currentNode = endNode;
-        while (!currentNode.equals(startNode)) {
-            Set<GraphEdge> edges = currentNode.getEdges();
-            for (GraphEdge edge : edges) {
-                GraphNode neighbor = edge.getOtherNode(currentNode);
-                if (distances.get(neighbor) + edge.getWeight() == distances.get(currentNode)) {
-                    System.out
-                            .println("  " + neighbor + " -> " + currentNode + " (distancia: " + edge.getWeight() + ")");
-                    totalDistance += edge.getWeight();
-                    currentNode = neighbor;
-                    break;
-                }
+    StringBuilder path = new StringBuilder();
+    path.append("Camino más corto de ").append(startNode).append(" a ").append(endNode).append(":\n");
+
+    Double totalDistance = 0.0;
+    GraphNode currentNode = endNode;
+
+    // Usamos una pila para invertir el camino
+    LinkedList<String> steps = new LinkedList<>();
+
+    while (!currentNode.equals(startNode)) {
+        boolean found = false;
+        for (GraphEdge edge : currentNode.getEdges()) {
+            GraphNode neighbor = edge.getOtherNode(currentNode);
+            if (distances.get(neighbor) + edge.getWeight() == distances.get(currentNode)) {
+                steps.addFirst(neighbor + " -> " + currentNode + " (distancia: " + edge.getWeight() + ")");
+                totalDistance += edge.getWeight();
+                currentNode = neighbor;
+                found = true;
+                break;
             }
         }
-        return ("Distancia total: " + totalDistance);
+        if (!found) {
+            return "Error al reconstruir el camino. No se encontró un camino válido.";
+        }
     }
+
+    // Agregar los pasos al StringBuilder
+    for (String step : steps) {
+        path.append("  ").append(step).append("\n");
+    }
+
+    path.append("Distancia total: ").append(totalDistance);
+    return path.toString();
+}
 }
